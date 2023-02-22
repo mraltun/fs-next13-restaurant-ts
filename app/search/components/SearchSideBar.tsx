@@ -1,20 +1,29 @@
-export default function SearchSideBar() {
+import { Cuisine, Location } from "@prisma/client";
+
+export default function SearchSideBar({
+  locations,
+  cuisines,
+}: {
+  locations: Location[];
+  cuisines: Cuisine[];
+}) {
   return (
     <div className='w-1/5'>
       <div className='border-b pb-4'>
         <h1 className='mb-2'>Region</h1>
-        <p className='font-light text-reg'>Istanbul</p>
-        <p className='font-light text-reg'>Ankara</p>
-        <p className='font-light text-reg'>Izmir</p>
-        <p className='font-light text-reg'>Adana</p>
-        <p className='font-light text-reg'>Gaziantep</p>
-        <p className='font-light text-reg'>Hatay</p>
+        {locations.map((location) => (
+          <p className='font-light text-reg capitalize' key={location.id}>
+            {location.name}
+          </p>
+        ))}
       </div>
       <div className='border-b pb-4 mt-3'>
         <h1 className='mb-2'>Cuisine</h1>
-        <p className='font-light text-reg'>Turkish</p>
-        <p className='font-light text-reg'>Italian</p>
-        <p className='font-light text-reg'>Chinese</p>
+        {cuisines.map((cuisine) => (
+          <p className='font-light text-reg capitalize' key={cuisine.id}>
+            {cuisine.name}
+          </p>
+        ))}
       </div>
       <div className='mt-3 pb-4'>
         <h1 className='mb-2'>Price</h1>
