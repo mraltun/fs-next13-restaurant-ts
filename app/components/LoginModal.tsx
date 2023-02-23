@@ -18,14 +18,26 @@ const style = {
   p: 4,
 };
 
-export default function BasicModal() {
+export default function LoginModal({ isSignin }: { isSignin: boolean }) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const renderContent = (signinContent: string, signupContent: string) => {
+    return isSignin ? signinContent : signupContent;
+  };
+
   return (
     <div>
-      <Button onClick={handleOpen}>Open modal</Button>
+      <button
+        onClick={handleOpen}
+        className={`${renderContent(
+          "bg-blue-400 text-white",
+          ""
+        )} border mr-3 p-1 px-4 rounded`}
+      >
+        {renderContent("Sign in", "Sign up")}
+      </button>
       <Modal
         open={open}
         onClose={handleClose}
