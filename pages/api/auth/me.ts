@@ -14,11 +14,15 @@ export default async function handler(
   const payload = jwt.decode(token) as { email: string };
 
   if (!payload.email) {
-    return res.status(401).json({ errorMessage: "Unauthorized request" });
+    return res.status(401).json({
+      errorMessage: "Unauthorized request",
+    });
   }
 
-  return prisma.user.findUnique({
-    where: { email: payload.email },
+  const user = await prisma.user.findUnique({
+    where: {
+      email: payload.email,
+    },
     select: {
       id: true,
       first_name: true,
@@ -27,5 +31,19 @@ export default async function handler(
       city: true,
       phone: true,
     },
+  });
+
+  if (!user) {
+    return res.status(401).json({
+      errorMessage: "User not found",
+    });
+  }
+
+  return res.json({
+    id: user.id,
+    firstName: user.first_name,
+    lastName: user.last_name,
+    phone: user.phone,
+    city: user.city,
   });
 }
