@@ -55,7 +55,11 @@ export default async function handler(
 
   const restaurant = await prisma.restaurant.findUnique({
     where: { slug },
-    select: { tables: true },
+    select: {
+      tables: true,
+      open_time: true,
+      close_time: true,
+    },
   });
 
   if (!restaurant) {
@@ -81,16 +85,27 @@ export default async function handler(
     });
   });
 
-  const availabilities = searchTimesWithTables.map((t) => {
-    const sumSeats = t.tables.reduce((sum, table) => {
-      return sum + table.seats;
-    }, 0);
+  const availabilities = searchTimesWithTables
+    .map((t) => {
+      const sumSeats = t.tables.reduce((sum, table) => {
+        return sum + table.seats;
+      }, 0);
 
-    return {
-      time: t.time,
-      available: sumSeats >= parseInt(partySize),
-    };
-  });
+      return {
+        time: t.time,
+        available: sumSeats >= parseInt(partySize),
+      };
+    })
+    .filter((availability) => {
+      const timeIsAfterOpeningHours =
+        new Date(`${day}T${availability.time}`) >=
+        new Date(`${day}T${restaurant.open_time}`);
+      const timeIsAfterClosingHours =
+        new Date(`${day}T${availability.time}`) <=
+        new Date(`${day}T${restaurant.close_time}`);
+
+      return timeIsAfterOpeningHours && timeIsAfterClosingHours;
+    });
 
   return res.json({ searchTimes, bookings });
 }
